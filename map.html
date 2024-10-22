@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interaktive Karte mit Navigationsleiste</title>
+    <!-- Lien vers Bootstrap -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Lien vers Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <!-- Lien vers Leaflet Control Geocoder CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+    <!-- Custom CSS -->
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+        }
+        #map {
+            height: calc(100% - 70px); /* Ajuste la hauteur pour laisser la place à la barre de navigation */
+            width: 100%;
+            margin-top: 70px; /* Ajoute un espace pour éviter que la carte ne soit cachée sous la navbar */
+        }
+        .navbar {
+            background-color: #1c1e21; /* Couleur de fond de la barre de navigation */
+            height: 70px;
+        }
+        .navbar-brand {
+            color: #fff;
+            display: flex;
+            align-items: center;
+        }
+        .navbar-brand img {
+            height: 40px; /* Ajustez la taille de l'image */
+            margin-right: 10px;
+        }
+        .navbar-nav .nav-link {
+            color: #f8f9fa !important;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+        .navbar-nav .nav-link:hover {
+            color: #ffc107 !important; /* Couleur au survol */
+        }
+        .form-inline {
+            margin-left: auto;
+        }
+        /* Ensure Leaflet controls are not hidden */
+        .leaflet-control {
+            z-index: 1000 !important; /* Ensure zoom controls are on top */
+        }
+    </style>
+</head>
+<body>
+    <!-- Barre de navigation avec un logo -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <a class="navbar-brand" href="#" onclick="location.reload();">
+            <img src="RWTH_mre_en_rgb.png" alt="MRE Logo"> RWTH Aachen University
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <form class="form-inline">
+                <input class="form-control mr-sm-2" type="search" placeholder="Rechercher" aria-label="Rechercher" id="searchInput">
+                <button class="btn btn-warning my-2 my-sm-0" type="button" onclick="searchLocation()">Rechercher</button>
+            </form>
+        </div>
+    </nav>
+
+    <!-- Conteneur pour la carte -->
+    <div id="map"></div>
+
+    <!-- Scripts nécessaires pour Bootstrap, Leaflet et le Geocoder -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    <script>
+        // Initialiser la carte Leaflet
+        var map = L.map('map').setView([35.55844374046334, 24.1835658290395], 7);
+
+        // Ajouter la couche de tuiles Satellite Hybrid
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles © Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+        }).addTo(map);
+
+        // Coordonnées pour Hordaki Quarry Mine
+        var hordakiCoordinates = [35.55844374046334, 24.1835658290395];
+        var riotintoCoordinates = [37.704365, -6.580547]; // Coordonnées pour Minas de Riotinto
+        var gantCoordinates = [47.3725, 18.3917]; // Coordonnées pour Gánt, Hongrie
+
+        // Ajouter le marqueur pour Hordaki Quarry Mine
+        var markerHordaki = L.marker(hordakiCoordinates).addTo(map);
+        var clickedHordaki = false;
+
+        var popupContentHordaki = `
+            <div style="text-align: center;">
+                <h4>Hordaki Steinbruch</h4>
+                <p>Willkommen am Standort des <strong>Hordaki Steinbruchs</strong>, einem einzigartigen Ort für den Abbau mineralischer Ressourcen.</p>
+                <p>Klicken Sie erneut, um mehr auf der offiziellen Website zu erfahren.</p>
+                <a href='https://hordaki.mre.rwth-aachen.de' target='_blank'>Besuchen Sie die Website</a>
+            </div>
+        `;
+
+        markerHordaki.bindPopup(popupContentHordaki);
+
+        markerHordaki.on('click', function() {
+            if (!clickedHordaki) {
+                map.setView(hordakiCoordinates, 14, { animate: true });
+                clickedHordaki = true;
+            } else {
+                window.open('https://hordaki.mre.rwth-aachen.de', '_blank');
+            }
+        });
+
+        // Ajouter le marqueur pour Minas de Riotinto, Spanien
+        var markerRiotinto = L.marker(riotintoCoordinates).addTo(map);
+        var clickedRiotinto = false;
+
+        var popupContentRiotinto = `
+            <div style="text-align: center;">
+                <h4>Minas de Riotinto</h4>
+                <p>Willkommen am Standort der <strong>Minas de Riotinto</strong> in Spanien, bekannt für ihre historischen Bergbauaktivitäten.</p>
+                <p>Klicken Sie erneut, um mehr auf der offiziellen Website zu erfahren.</p>
+                <a href='https://example.com' target='_blank'>Besuchen Sie die Website</a>
+            </div>
+        `;
+
+        markerRiotinto.bindPopup(popupContentRiotinto);
+
+        markerRiotinto.on('click', function() {
+            if (!clickedRiotinto) {
+                map.setView(riotintoCoordinates, 14, { animate: true });
+                clickedRiotinto = true;
+            } else {
+                window.open('https://example.com', '_blank');
+            }
+        });
+
+        // Ajouter le marqueur pour Gánt, Hongrie
+        var markerGant = L.marker(gantCoordinates).addTo(map);
+        var clickedGant = false;
+
+        var popupContentGant = `
+            <div style="text-align: center;">
+                <h4>Gánt</h4>
+                <p>Willkommen am Standort <strong>Gánt</strong> in Ungarn, einem historischen Bergbaugebiet.</p>
+                <p>Klicken Sie erneut, um mehr auf der offiziellen Website zu erfahren.</p>
+                <a href='https://example.com' target='_blank'>Besuchen Sie die Website</a>
+            </div>
+        `;
+
+        markerGant.bindPopup(popupContentGant);
+
+        markerGant.on('click', function() {
+            if (!clickedGant) {
+                map.setView(gantCoordinates, 14, { animate: true });
+                clickedGant = true;
+            } else {
+                window.open('https://example.com', '_blank');
+            }
+        });
+
+        // Ajouter le Geocoder pour permettre la recherche sur la carte
+        var geocoder = L.Control.Geocoder.nominatim();
+        
+        function searchLocation() {
+            var query = document.getElementById('searchInput').value.trim().toLowerCase();
+            
+            // Vérifier si la recherche correspond à "Hordaki", "Minas de Riotinto" ou "Gánt"
+            if (query.includes('hordaki')) {
+                map.setView(hordakiCoordinates, 14);
+                markerHordaki.openPopup();
+            } else if (query.includes('riotinto')) {
+                map.setView(riotintoCoordinates, 14);
+                markerRiotinto.openPopup();
+            } else if (query.includes('gánt') || query.includes('gant')) {
+                map.setView(gantCoordinates, 14);
+                markerGant.openPopup();
+            } else {
+                // Sinon, effectuer une recherche classique
+                geocoder.geocode(query, function(results) {
+                    if (results && results.length > 0) {
+                        var result = results[0];
+                        map.setView([result.center.lat, result.center.lng], 14);
+                        L.marker([result.center.lat, result.center.lng]).addTo(map)
+                            .bindPopup(result.name || query)
+                            .openPopup();
+                    } else {
+                        alert("Ort nicht gefunden: " + query);
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+</html>
