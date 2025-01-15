@@ -49,24 +49,82 @@
         .leaflet-control {
             z-index: 1000 !important; /* Ensure zoom controls are on top */
         }
+            .styled-search-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 350px; /* Ajustez la largeur selon vos besoins */
+        height: 40px;
+        background-color: white;
+        border-radius: 25px;
+        overflow: hidden;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Ombre douce */
+        border: 1px solid #ccc; /* Fine bordure grise */
+    }
+
+    .styled-input {
+        flex: 1;
+        padding: 0 15px;
+        font-size: 14px;
+        border: none;
+        outline: none;
+        color: #333;
+        height: 100%; /* Occupe toute la hauteur */
+    }
+
+    .styled-input::placeholder {
+        color: #aaa;
+        font-style: italic;
+    }
+
+    .styled-search-button {
+        background-color: #74a2dd; /* Couleur jaune */
+        border: none;
+        width: 50px; /* Largeur fixe pour le bouton */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        height: 100%; /* Occupe toute la hauteur */
+    }
+
+    .styled-search-button:hover {
+        background-color: #e0a800; /* Jaune foncé au survol */
+    }
+
+    .styled-search-button svg {
+        fill: white;
+        width: 20px;
+        height: 20px;
+    }
+        
     </style>
 </head>
 <body>
     <!-- Barre de navigation avec un logo -->
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
-        <a class="navbar-brand" href="#" onclick="location.reload();">
-            <img src="RWTH_mre_en_rgb.png" alt="MRE Logo"> RWTH Aachen University
-        </a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <form class="form-inline">
-                <input class="form-control mr-sm-2" type="search" placeholder="Rechercher" aria-label="Rechercher" id="searchInput">
-                <button class="btn btn-warning my-2 my-sm-0" type="button" onclick="searchLocation()">Rechercher</button>
-            </form>
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <a class="navbar-brand" href="#" onclick="location.reload();">
+        <img src="RWTH_mre_en_rgb.png" alt="MRE Logo"> RWTH Aachen University
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <div class="ml-auto">
+            <!-- Barre de recherche stylée -->
+            <div class="styled-search-bar">
+                <input type="text" id="searchInput" class="styled-input" placeholder="Search">
+                <button type="button" onclick="searchLocation()" class="styled-search-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="white" class="bi bi-search" viewBox="0 0 16 16">
+                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.415l-3.85-3.85zm-5.442.906a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/>
+                    </svg>
+                </button>
+            </div>
         </div>
-    </nav>
+    </div>
+</nav>
+
 
     <!-- Conteneur pour la carte -->
     <div id="map"></div>
@@ -76,153 +134,191 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
-   <script>
-    // Initialiser la carte Leaflet
-    var map = L.map('map').setView([35.55844374046334, 24.1835658290395], 7);
+    <script>
+        // Initialiser la carte Leaflet
+        var map = L.map('map').setView([35.55844374046334, 24.1835658290395], 7);
 
-    // Ajouter la couche de tuiles Satellite Hybrid
-    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-        attribution: 'Tiles © Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
-    }).addTo(map);
+        // Ajouter la couche de tuiles Satellite Hybrid
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles © Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+        }).addTo(map);
 
-    // Coordonnées pour les emplacements
-    var hordakiCoordinates = [35.55844374046334, 24.1835658290395];
-    var riotintoCoordinates = [37.704365, -6.580547];
-    var gantCoordinates = [47.362743, 18.397455];
-    var dolphinMineCoordinates = [-40.053606371468256, 144.06150564177568];
+        // Coordonnées pour les emplacements
+        var hordakiCoordinates = [35.55844374046334, 24.1835658290395];
+        var riotintoCoordinates = [37.704365, -6.580547];
+        var gantCoordinates = [47.362743, 18.397455];
+        var dolphinMineCoordinates = [-40.053606371468256, 144.06150564177568];
+         var sanMiguelCoordinates = [37.76182275762107, -6.749157471717162]; 
 
-    // Marqueur pour Hordaki Quarry Mine
-    var markerHordaki = L.marker(hordakiCoordinates).addTo(map);
-    var clickedHordaki = false;
+        // Marqueur pour Hordaki Quarry Mine
+        var markerHordaki = L.marker(hordakiCoordinates).addTo(map);
+        markerHordaki.bindTooltip("Hordaki Steinbruch").openTooltip();
+        var clickedHordaki = false;
 
-    var popupContentHordaki = `
-        <div style="text-align: center;">
-            <h4>Hordaki Steinbruch</h4>
-            <p>Willkommen am Standort des <strong>Hordaki Steinbruchs</strong>, einem einzigartigen Ort für den Abbau mineralischer Ressourcen.</p>
-            <p>Klicken Sie erneut, um mehr auf der offiziellen Website zu erfahren.</p>
-            <a href='https://hordaki.mre.rwth-aachen.de' target='_blank'>Besuchen Sie die Website</a>
-        </div>
-    `;
+        var popupContentHordaki = `
+            <div style="text-align: center;">
+                <h4>Hordaki Steinbruch</h4>
+                <p>Willkommen am Standort des <strong>Hordaki Steinbruchs</strong>, einem einzigartigen Ort für den Abbau mineralischer Ressourcen.</p>
+                <p>Klicken Sie erneut, um mehr auf der offiziellen Website zu erfahren.</p>
+                <a href='https://hordaki.mre.rwth-aachen.de' target='_blank'>Besuchen Sie die Website</a>
+            </div>
+        `;
 
-    markerHordaki.bindPopup(popupContentHordaki);
+        markerHordaki.bindPopup(popupContentHordaki);
 
-    markerHordaki.on('click', function() {
-        if (!clickedHordaki) {
-            map.setView(hordakiCoordinates, 14, { animate: true });
-            clickedHordaki = true;
-        } else {
-            window.open('https://hordaki.mre.rwth-aachen.de', '_blank');
+        markerHordaki.on('click', function() {
+            if (!clickedHordaki) {
+                map.setView(hordakiCoordinates, 14, { animate: true });
+                clickedHordaki = true;
+            } else {
+                window.open('https://hordaki.mre.rwth-aachen.de', '_blank');
+            }
+        });
+
+        // Marqueur pour Minas de Riotinto, Spanien
+        var markerRiotinto = L.marker(riotintoCoordinates).addTo(map);
+        markerRiotinto.bindTooltip("Minas de Riotinto").openTooltip();
+        var clickedRiotinto = false;
+
+        var popupContentRiotinto = `
+            <div style="text-align: center;">
+                <h4>Minas de Riotinto</h4>
+                <p>Willkommen am Standort der <strong>Minas de Riotinto</strong> in Spanien, bekannt für ihre historischen Bergbauaktivitäten.</p>
+                <p>Klicken Sie erneut, um mehr auf der offiziellen Website zu erfahren.</p>
+                <a href='https://www.uhu.es/immerse/Riotinto/Tour/output/index.html' target='_blank'>Besuchen Sie die Website</a>
+            </div>
+        `;
+
+        markerRiotinto.bindPopup(popupContentRiotinto);
+
+        markerRiotinto.on('click', function() {
+            if (!clickedRiotinto) {
+                map.setView(riotintoCoordinates, 14, { animate: true });
+                clickedRiotinto = true;
+            } else {
+                window.open('https://www.uhu.es/immerse/Riotinto/Tour/output/index.html', '_blank');
+            }
+        });
+
+        // Marqueur pour Gánt, Hongrie
+        var markerGant = L.marker(gantCoordinates).addTo(map);
+        markerGant.bindTooltip("Gánt").openTooltip();
+        var clickedGant = false;
+
+        var popupContentGant = `
+            <div style="text-align: center;">
+                <h4>Gánt</h4>
+                <p>Willkommen am Standort <strong>Gánt</strong> in Ungarn, einem historischen Bergbaugebiet.</p>
+                <p>Klicken Sie erneut, um mehr auf der offiziellen Website zu erfahren.</p>
+                <a href='https://example.com' target='_blank'>Besuchen Sie die Website</a>
+            </div>
+        `;
+
+        markerGant.bindPopup(popupContentGant);
+
+        markerGant.on('click', function() {
+            if (!clickedGant) {
+                map.setView(gantCoordinates, 14, { animate: true });
+                clickedGant = true;
+            } else {
+                window.open('https://example.com', '_blank');
+            }
+        });
+
+        // Marqueur pour Dolphin Mine, Australie
+        var markerDolphinMine = L.marker(dolphinMineCoordinates).addTo(map);
+        markerDolphinMine.bindTooltip("Dolphin Mine").openTooltip();
+        var clickedDolphinMine = false;
+
+        var popupContentDolphinMine = `
+            <div style="text-align: center;">
+                <h4>Dolphin Mine</h4>
+                <p>Willkommen am Standort der <strong>Dolphin Mine</strong> in Australien, bekannt für ihre bedeutenden Bergbauaktivitäten.</p>
+                <p>Klicken Sie erneut, um mehr auf der offiziellen Website zu erfahren.</p>
+                <a href='http://www.ausgeol.org/assets/media/uploads/tours/Dolphin2024/Start/index.html' target='_blank'>Besuchen Sie die Website</a>
+            </div>
+        `;
+
+        markerDolphinMine.bindPopup(popupContentDolphinMine);
+
+        markerDolphinMine.on('click', function() {
+            if (!clickedDolphinMine) {
+                map.setView(dolphinMineCoordinates, 14, { animate: true });
+                clickedDolphinMine = true;
+            } else {
+                window.open('http://www.ausgeol.org/assets/media/uploads/tours/Dolphin2024/Start/index.html', '_blank');
+            }
+        });
+         // Ajouter le marqueur pour San Miguel Mine
+        var markerSanMiguel = L.marker(sanMiguelCoordinates).addTo(map);
+        markerSanMiguel.bindTooltip("San Miguel Mine").openTooltip();
+        var clickedSanMiguel = false;
+
+        var popupContentSanMiguel = `
+            <div style="text-align: center;">
+                <h4>San Miguel Mine</h4>
+                <p>Willkommen am Standort der <strong>San Miguel Mine</strong>, bekannt für ihre historischen Bergbauaktivitäten.</p>
+                <p>Klicken Sie erneut, um mehr auf der offiziellen Website zu erfahren.</p>
+                <a href='https://www.uhu.es/immerse/SanMiguel/Tour/output/index.html' target='_blank'>Besuchen Sie die Website</a>
+            </div>
+        `;
+
+        markerSanMiguel.bindPopup(popupContentSanMiguel);
+
+        markerSanMiguel.on('click', function() {
+            if (!clickedSanMiguel) {
+                map.setView(sanMiguelCoordinates, 14, { animate: true });
+                clickedSanMiguel = true;
+            } else {
+                window.open('https://www.uhu.es/immerse/SanMiguel/Tour/output/index.html', '_blank');
+            }
+        });
+
+        // Ajouter la gestion de la touche Entrée pour la recherche
+        document.getElementById('searchInput').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                searchLocation();
+            }
+        });
+
+        // Ajouter le Geocoder pour permettre la recherche sur la carte
+        var geocoder = L.Control.Geocoder.nominatim();
+
+        function searchLocation() {
+    var query = document.getElementById('searchInput').value.trim().toLowerCase();
+    
+    // Vérifier les recherches spécifiques
+    if (query.includes('hordaki')) {
+        map.setView(hordakiCoordinates, 14);
+        markerHordaki.openPopup();
+    } else if (query.includes('riotinto')) {
+        map.setView(riotintoCoordinates, 14);
+        markerRiotinto.openPopup();
+    } else if (query.includes('gánt') || query.includes('gant')) {
+        map.setView(gantCoordinates, 14);
+        markerGant.openPopup();
+    } else if (query.includes('dolphin')) {
+        map.setView(dolphinMineCoordinates, 14);
+        markerDolphinMine.openPopup();
+    } else if (query.includes('san miguel')) { // Ajout de la condition pour San Miguel Mine
+        map.setView(sanMiguelCoordinates, 14);
+        markerSanMiguel.openPopup();
+    } else {
+        // Recherche classique
+        geocoder.geocode(query, function(results) {
+            if (results && results.length > 0) {
+                var result = results[0];
+                map.setView([result.center.lat, result.center.lng], 14);
+                L.marker([result.center.lat, result.center.lng]).addTo(map)
+                    .bindPopup(result.name || query)
+                    .openPopup();
+            } else {
+                alert("Ort nicht gefunden: " + query);
+            }
+        });
+            }
         }
-    });
-
-    // Marqueur pour Minas de Riotinto, Spanien
-    var markerRiotinto = L.marker(riotintoCoordinates).addTo(map);
-    var clickedRiotinto = false;
-
-    var popupContentRiotinto = `
-        <div style="text-align: center;">
-            <h4>Minas de Riotinto</h4>
-            <p>Willkommen am Standort der <strong>Minas de Riotinto</strong> in Spanien, bekannt für ihre historischen Bergbauaktivitäten.</p>
-            <p>Klicken Sie erneut, um mehr auf der offiziellen Website zu erfahren.</p>
-            <a href='https://www.uhu.es/immerse/Riotinto/Tour/output/index.html' target='_blank'>Besuchen Sie die Website</a>
-        </div>
-    `;
-
-    markerRiotinto.bindPopup(popupContentRiotinto);
-
-    markerRiotinto.on('click', function() {
-        if (!clickedRiotinto) {
-            map.setView(riotintoCoordinates, 14, { animate: true });
-            clickedRiotinto = true;
-        } else {
-            window.open('https://www.uhu.es/immerse/Riotinto/Tour/output/index.html', '_blank');
-        }
-    });
-
-    // Marqueur pour Gánt, Hongrie
-    var markerGant = L.marker(gantCoordinates).addTo(map);
-    var clickedGant = false;
-
-    var popupContentGant = `
-        <div style="text-align: center;">
-            <h4>Gánt</h4>
-            <p>Willkommen am Standort <strong>Gánt</strong> in Ungarn, einem historischen Bergbaugebiet.</p>
-            <p>Klicken Sie erneut, um mehr auf der offiziellen Website zu erfahren.</p>
-            <a href='https://example.com' target='_blank'>Besuchen Sie die Website</a>
-        </div>
-    `;
-
-    markerGant.bindPopup(popupContentGant);
-
-    markerGant.on('click', function() {
-        if (!clickedGant) {
-            map.setView(gantCoordinates, 14, { animate: true });
-            clickedGant = true;
-        } else {
-            window.open('https://example.com', '_blank');
-        }
-    });
-
-    // Marqueur pour Dolphin Mine, Australie
-    var markerDolphinMine = L.marker(dolphinMineCoordinates).addTo(map);
-    var clickedDolphinMine = false;
-
-    var popupContentDolphinMine = `
-        <div style="text-align: center;">
-            <h4>Dolphin Mine</h4>
-            <p>Willkommen am Standort der <strong>Dolphin Mine</strong> in Australien, bekannt für ihre bedeutenden Bergbauaktivitäten.</p>
-            <p>Klicken Sie erneut, um mehr auf der offiziellen Website zu erfahren.</p>
-            <a href='http://www.ausgeol.org/assets/media/uploads/tours/Dolphin2024/Start/index.html' target='_blank'>Besuchen Sie die Website</a>
-        </div>
-    `;
-
-    markerDolphinMine.bindPopup(popupContentDolphinMine);
-
-    markerDolphinMine.on('click', function() {
-        if (!clickedDolphinMine) {
-            map.setView(dolphinMineCoordinates, 14, { animate: true });
-            clickedDolphinMine = true;
-        } else {
-            window.open('http://www.ausgeol.org/assets/media/uploads/tours/Dolphin2024/Start/index.html', '_blank');
-        }
-    });
-
-    // Ajouter le Geocoder pour permettre la recherche sur la carte
-    var geocoder = L.Control.Geocoder.nominatim();
-
-    function searchLocation() {
-        var query = document.getElementById('searchInput').value.trim().toLowerCase();
-        
-        // Vérifier les recherches spécifiques
-        if (query.includes('hordaki')) {
-            map.setView(hordakiCoordinates, 14);
-            markerHordaki.openPopup();
-        } else if (query.includes('riotinto')) {
-            map.setView(riotintoCoordinates, 14);
-            markerRiotinto.openPopup();
-        } else if (query.includes('gánt') || query.includes('gant')) {
-            map.setView(gantCoordinates, 14);
-            markerGant.openPopup();
-        } else if (query.includes('dolphin')) {
-            map.setView(dolphinMineCoordinates, 14);
-            markerDolphinMine.openPopup();
-        } else {
-            // Recherche classique
-            geocoder.geocode(query, function(results) {
-                if (results && results.length > 0) {
-                    var result = results[0];
-                    map.setView([result.center.lat, result.center.lng], 14);
-                    L.marker([result.center.lat, result.center.lng]).addTo(map)
-                        .bindPopup(result.name || query)
-                        .openPopup();
-                } else {
-                    alert("Ort nicht gefunden: " + query);
-                }
-            });
-        }
-    }
-</script>
-
-
+    </script>
 </body>
 </html>
