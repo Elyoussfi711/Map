@@ -149,7 +149,57 @@
         var gantCoordinates = [47.362743, 18.397455];
         var dolphinMineCoordinates = [-40.053606371468256, 144.06150564177568];
          var sanMiguelCoordinates = [37.76182275762107, -6.749157471717162]; 
+         var hellasGoldCoordinates = [40.602294, 23.745953];
+         var dionysosMarbleCoordinates = [38.100710, 23.908330];
 
+        // Marqueur pour Hellas Gold Olympias
+var markerHellasGold = L.marker(hellasGoldCoordinates).addTo(map);
+markerHellasGold.bindTooltip("Hellas Gold Olympias").openTooltip();
+var clickedHellasGold = false;
+
+var popupContentHellasGold = `
+    <div style="text-align: center;">
+        <h4>Hellas Gold Olympias</h4>
+        <p>Willkommen am Standort der <strong>Hellas Gold Olympias</strong>.</p>
+        <p>Klicken Sie erneut, um mehr auf der offiziellen Website zu erfahren.</p>
+        <a href='https://envi-stat.gr/?page_id=145' target='_blank'>Besuchen Sie die Website</a>
+    </div>
+`;
+
+markerHellasGold.bindPopup(popupContentHellasGold);
+
+markerHellasGold.on('click', function() {
+    if (!clickedHellasGold) {
+        map.setView(hellasGoldCoordinates, 14, { animate: true });
+        clickedHellasGold = true;
+    } else {
+        window.open('https://envi-stat.gr/?page_id=145', '_blank');
+    }
+});
+// Marqueur pour Dionysos Marble
+var markerDionysosMarble = L.marker(dionysosMarbleCoordinates).addTo(map);
+markerDionysosMarble.bindTooltip("Dionysos Marble").openTooltip();
+var clickedDionysosMarble = false;
+
+var popupContentDionysosMarble = `
+    <div style="text-align: center;">
+        <h4>Dionysos Marble</h4>
+        <p>Willkommen am Standort der <strong>Dionysos Marble</strong>.</p>
+        <p>Klicken Sie erneut, um mehr auf der offiziellen Website zu erfahren.</p>
+        <a href='https://envi-stat.gr/?page_id=121' target='_blank'>Besuchen Sie die Website</a>
+    </div>
+`;
+
+markerDionysosMarble.bindPopup(popupContentDionysosMarble);
+
+markerDionysosMarble.on('click', function() {
+    if (!clickedDionysosMarble) {
+        map.setView(dionysosMarbleCoordinates, 14, { animate: true });
+        clickedDionysosMarble = true;
+    } else {
+        window.open('https://envi-stat.gr/?page_id=121', '_blank');
+    }
+});
         // Marqueur pour Hordaki Quarry Mine
         var markerHordaki = L.marker(hordakiCoordinates).addTo(map);
         markerHordaki.bindTooltip("Hordaki Quarry Mine").openTooltip();
@@ -288,36 +338,41 @@
         function searchLocation() {
     var query = document.getElementById('searchInput').value.trim().toLowerCase();
     
-    // Vérifier les recherches spécifiques
     if (query.includes('hordaki')) {
-        map.setView(hordakiCoordinates, 14);
-        markerHordaki.openPopup();
-    } else if (query.includes('riotinto')) {
-        map.setView(riotintoCoordinates, 14);
-        markerRiotinto.openPopup();
-    } else if (query.includes('gánt') || query.includes('gant')) {
-        map.setView(gantCoordinates, 14);
-        markerGant.openPopup();
-    } else if (query.includes('dolphin')) {
-        map.setView(dolphinMineCoordinates, 14);
-        markerDolphinMine.openPopup();
-    } else if (query.includes('san miguel')) { // Ajout de la condition pour San Miguel Mine
-        map.setView(sanMiguelCoordinates, 14);
-        markerSanMiguel.openPopup();
-    } else {
-        // Recherche classique
-        geocoder.geocode(query, function(results) {
-            if (results && results.length > 0) {
-                var result = results[0];
-                map.setView([result.center.lat, result.center.lng], 14);
-                L.marker([result.center.lat, result.center.lng]).addTo(map)
-                    .bindPopup(result.name || query)
-                    .openPopup();
-            } else {
-                alert("Ort nicht gefunden: " + query);
-            }
-        });
-            }
+    map.setView(hordakiCoordinates, 14);
+    markerHordaki.openPopup();
+} else if (query.includes('riotinto')) {
+    map.setView(riotintoCoordinates, 14);
+    markerRiotinto.openPopup();
+} else if (query.includes('gánt') || query.includes('gant')) {
+    map.setView(gantCoordinates, 14);
+    markerGant.openPopup();
+} else if (query.includes('dolphin')) {
+    map.setView(dolphinMineCoordinates, 14);
+    markerDolphinMine.openPopup();
+} else if (query.includes('san miguel')|| query.includes('san') || query.includes('miguel')) { // Ajout de la condition pour San Miguel Mine
+    map.setView(sanMiguelCoordinates, 14);
+    markerSanMiguel.openPopup();
+} else if (query.includes('hellas gold') || query.includes('olympias') || query.includes('hellas')) { // Ajout pour Hellas Gold Olympias
+    map.setView(hellasGoldCoordinates, 14);
+    markerHellasGold.openPopup();
+} else if (query.includes('dionysos') || query.includes('marble')) { // Ajout pour Dionysos Marble
+    map.setView(dionysosMarbleCoordinates, 14);
+    markerDionysosMarble.openPopup();
+} else {
+    // Recherche classique
+    geocoder.geocode(query, function(results) {
+        if (results && results.length > 0) {
+            var result = results[0];
+            map.setView([result.center.lat, result.center.lng], 14);
+            L.marker([result.center.lat, result.center.lng]).addTo(map)
+                .bindPopup(result.name || query)
+                .openPopup();
+        } else {
+            alert("Ort nicht gefunden: " + query);
+        }
+    });
+}
         }
     </script>
 </body>
